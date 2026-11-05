@@ -231,6 +231,9 @@ interface TemplateManagerProps {
   onCopy: (templateBody: string) => void;
   onDelete: (templateId: string) => void;
   onUseCampaign?: (template: MessageTemplate) => void;
+  canCreate?: boolean;
+  canSync?: boolean;
+  canDelete?: boolean;
   // Pagination handlers
   onNextPage?: () => void;
   onPreviousPage?: () => void;
@@ -435,6 +438,7 @@ interface TemplateCardProps {
   onUseCampaign?: (template: MessageTemplate) => void;
   dictionary: TemplateManagerDictionary;
   hideActions?: boolean;
+  canDelete?: boolean;
 }
 
 export function TemplateCard({
@@ -447,6 +451,7 @@ export function TemplateCard({
   onUseCampaign,
   dictionary,
   hideActions = false,
+  canDelete = true,
 }: TemplateCardProps) {
   const dict = dictionary;
   const [isVideoPlaying, setIsVideoPlaying] = useState(false);
@@ -479,7 +484,7 @@ export function TemplateCard({
 
   if (!mounted) {
     return (
-      <Card className="h-full max-h-[700px] animate-pulse template-card template-card-loading flex flex-col">
+      <Card className="h-full max-h-175 animate-pulse template-card template-card-loading flex flex-col">
         <div className="h-full bg-muted rounded-lg template-card-loading-content" />
       </Card>
     );
@@ -557,7 +562,7 @@ export function TemplateCard({
                   alt={alt}
                   width={300}
                   height={160}
-                  className="w-full h-40 object-cover template-media-image max-h-[200px]"
+                  className="w-full h-40 object-cover template-media-image max-h-50"
                   style={{ height: "auto" }}
                   onError={() => setMediaError(true)}
                   onLoad={() => setMediaLoaded(true)}
@@ -650,12 +655,12 @@ export function TemplateCard({
 
   return (
     <TooltipProvider>
-      <Card className={`group/card relative overflow-hidden transition-all duration-300 border-border/50 template-card template-card-${template.id} flex flex-col ${hideActions ? "h-auto" : "h-full min-h-[420px] max-h-[700px] hover:shadow-lg hover:-translate-y-1 hover:border-border"}`}>
+      <Card className={`group/card relative overflow-hidden transition-all duration-300 border-border/50 template-card template-card-${template.id} flex flex-col ${hideActions ? "h-auto" : "h-full min-h-105 max-h-175 hover:shadow-lg hover:-translate-y-1 hover:border-border"}`}>
         <CardHeader className="pb-3 template-card-header shrink-0">
           <div className="flex items-start justify-between template-card-header-top">
             <div className="flex-1 min-w-0 template-card-header-content">
               <div className="flex items-center gap-2 mb-2 template-card-name-section">
-                <code className="text-xs font-mono bg-muted px-2 py-1 rounded text-muted-foreground template-name template-name-${template.name} truncate max-w-[200px]">
+                <code className="text-xs font-mono bg-muted px-2 py-1 rounded text-muted-foreground template-name template-name-${template.name} truncate max-w-50">
                   {template.name}
                 </code>
                 {headerComponent && "format" in headerComponent && (
@@ -711,6 +716,8 @@ export function TemplateCard({
                       <Copy className="mr-2 h-4 w-4" />
                       {dict.templates.copy_content}
                     </DropdownMenuItem>
+                    {canDelete && (
+                    <>
                     <DropdownMenuSeparator />
                     <DropdownMenuItem
                       onSelect={handleDeleteRequest}
@@ -724,6 +731,8 @@ export function TemplateCard({
                       )}
                       {dict.templates.delete}
                     </DropdownMenuItem>
+                    </>
+                    )}
                   </DropdownMenuContent>
                 </DropdownMenu>}
               </div>
@@ -731,7 +740,7 @@ export function TemplateCard({
           </div>
 
           <div className="flex items-center gap-2 text-xs text-muted-foreground template-card-meta">
-            <span className="bg-secondary px-2 py-1 rounded-full template-category template-category-${template.category.replace(/\s+/g, '-')} truncate max-w-[120px]">
+            <span className="bg-secondary px-2 py-1 rounded-full template-category template-category-${template.category.replace(/\s+/g, '-')} truncate max-w-30">
               {template.category}
             </span>
             <span className="template-meta-separator">•</span>
@@ -778,17 +787,17 @@ export function TemplateCard({
             buttonsComponent.buttons.length > 0 && (
               <div className="shrink-0 mt-4 space-y-2 template-buttons-section">
                 <Separator className="template-buttons-separator" />
-                <div className="space-y-1.5 template-buttons-container overflow-y-auto max-h-[200px]">
+                <div className="space-y-1.5 template-buttons-container overflow-y-auto max-h-50">
                   {buttonsComponent.buttons.map((button, index) => (
                     <div
                       key={index}
                       onClick={() => handleButtonClick(button)}
-                      className="w-full p-2.5 text-center text-sm font-medium bg-brand-green-dim border border-brand-green/20 rounded-md transition-colors text-brand-green template-action-button template-action-button-${index} flex items-center justify-center gap-2 min-h-[40px] cursor-pointer"
+                      className="w-full p-2.5 text-center text-sm font-medium bg-brand-green-dim border border-brand-green/20 rounded-md transition-colors text-brand-green template-action-button template-action-button-${index} flex items-center justify-center gap-2 min-h-10 cursor-pointer"
                     >
                       <ButtonIcon type={button.type} />
                       <span className="truncate">{button.text}</span>
                       {button.type === "URL" && "url" in button && (
-                        <span className="text-xs text-muted-foreground ml-1 truncate max-w-[80px]">
+                        <span className="text-xs text-muted-foreground ml-1 truncate max-w-20">
                           ({new URL(button.url).hostname})
                         </span>
                       )}
@@ -868,7 +877,7 @@ export function TemplateCard({
 // #region SKELETON
 function TemplateCardSkeleton() {
   return (
-    <Card className="h-full max-h-[700px] template-card-skeleton flex flex-col">
+    <Card className="h-full max-h-175 template-card-skeleton flex flex-col">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div className="flex-1 space-y-2">
@@ -990,6 +999,9 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
   onUseCampaign,
   onNextPage,
   onPreviousPage,
+  canCreate = true,
+  canSync = true,
+  canDelete = true,
 }) => {
   const dict = providedDictionary || fallbackDictionary;
   const [view, setView] = useState<"list" | "create">("list");
@@ -1044,7 +1056,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
         {/* Stats Skeleton */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
           {Array.from({ length: 4 }).map((_, i) => (
-            <Card key={i} className="h-full max-h-[700px]">
+            <Card key={i} className="h-full max-h-175">
               <CardContent className="p-4">
                 <div className="flex items-center justify-between">
                   <div className="space-y-2">
@@ -1088,6 +1100,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
           </p> */}
         </div>
         <div className="flex items-center gap-3 template-header-actions">
+          {canSync && (
           <Button
             variant="outline"
             className="gap-2 bg-transparent template-sync-button"
@@ -1096,6 +1109,8 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
             <Globe className="w-4 h-4" />
             {dict.templates.sync_templates}
           </Button>
+          )}
+          {canCreate && (
           <Button
             variant="success"
             className="gap-2 template-create-button"
@@ -1104,6 +1119,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
             <Plus className="w-4 h-4" />
             {dict.templates.create_template}
           </Button>
+          )}
         </div>
       </div>
 
@@ -1216,11 +1232,11 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
                 {dict.templates.no_templates_found}
               </h3>
               {totalTemplates === 0 && (
+                canCreate ? (
                 <>
                   <p className="text-muted-foreground text-center mb-4 template-empty-description">
                     {dict.templates.no_templates_desc}
                   </p>
-
                   <Button
                     variant="default"
                     className="gap-2 template-empty-action"
@@ -1230,6 +1246,9 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
                     {dict.templates.create_first_template}
                   </Button>
                 </>
+                ) : (
+                  <p className="text-muted-foreground text-center">No templates yet.</p>
+                )
               )}
             </CardContent>
           </Card>
@@ -1245,6 +1264,7 @@ const TemplateManager: React.FC<TemplateManagerProps> = ({
                 onCopy={onCopy}
                 onDelete={onDelete}
                 onUseCampaign={onUseCampaign}
+                canDelete={canDelete}
                 dictionary={dict}
               />
             ))}
