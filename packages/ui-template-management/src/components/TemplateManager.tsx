@@ -484,7 +484,7 @@ export function TemplateCard({
 
   if (!mounted) {
     return (
-      <Card className="h-full max-h-175 animate-pulse template-card template-card-loading flex flex-col">
+      <Card className={`h-full max-h-175 animate-pulse template-card template-card-loading flex flex-col ${hideActions ? "rounded-none border-0 bg-transparent shadow-none hover:shadow-none" : ""}`}>
         <div className="h-full bg-muted rounded-lg template-card-loading-content" />
       </Card>
     );
@@ -655,7 +655,7 @@ export function TemplateCard({
 
   return (
     <TooltipProvider>
-      <Card className={`group/card relative overflow-hidden transition-all duration-300 border-border/50 template-card template-card-${template.id} flex flex-col ${hideActions ? "h-auto" : "h-full min-h-105 max-h-175 hover:shadow-lg hover:-translate-y-1 hover:border-border"}`}>
+      <Card className={`group/card relative overflow-hidden transition-all duration-300 template-card template-card-${template.id} flex flex-col ${hideActions ? "h-auto rounded-none border-0 bg-transparent shadow-none hover:shadow-none" : "h-full min-h-105 max-h-175 border-border/50 hover:shadow-lg hover:-translate-y-1 hover:border-border"}`}>
         <CardHeader className="pb-3 template-card-header shrink-0">
           <div className="flex items-start justify-between template-card-header-top">
             <div className="flex-1 min-w-0 template-card-header-content">
@@ -688,7 +688,7 @@ export function TemplateCard({
                     <Button
                       variant="ghost"
                       size="sm"
-                      className="h-8 w-8 p-0 opacity-0 group-hover/card:opacity-100 transition-opacity template-action-menu-trigger shrink-0"
+                      className="h-8 w-8 p-0 opacity-100 transition-opacity template-action-menu-trigger shrink-0 [@media(hover:hover)]:opacity-0 [@media(hover:hover)]:group-hover/card:opacity-100 data-[state=open]:opacity-100 focus-visible:opacity-100"
                     >
                       <MoreVertical className="h-4 w-4" />
                     </Button>
